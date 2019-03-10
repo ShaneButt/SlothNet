@@ -9,7 +9,7 @@ namespace SlothNet
     class NeuralData
     {
         Dictionary<double[], double> Data { get; set; }
-        int Count = 0;
+        int Row = 0;
 
         public NeuralData(int rows)
         {
@@ -19,7 +19,7 @@ namespace SlothNet
         public void Add(double[] data, double desired)
         {
             Data.Add(data, desired);
-            Count++;
+            Row++;
         }
     }
 }
