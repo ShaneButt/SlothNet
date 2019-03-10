@@ -1,0 +1,7 @@
+C:\Users\Shane\source\repos\SlothNet\SlothNet\bin\Debug\SlothNet.exe.config
+C:\Users\Shane\source\repos\SlothNet\SlothNet\bin\Debug\SlothNet.exe
+C:\Users\Shane\source\repos\SlothNet\SlothNet\bin\Debug\SlothNet.pdb
+C:\Users\Shane\source\repos\SlothNet\SlothNet\obj\Debug\SlothNet.csprojAssemblyReference.cache
+C:\Users\Shane\source\repos\SlothNet\SlothNet\obj\Debug\SlothNet.csproj.CoreCompileInputs.cache
+C:\Users\Shane\source\repos\SlothNet\SlothNet\obj\Debug\SlothNet.exe
+C:\Users\Shane\source\repos\SlothNet\SlothNet\obj\Debug\SlothNet.pdb
