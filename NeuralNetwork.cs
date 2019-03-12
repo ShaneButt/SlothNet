@@ -1,5 +1,7 @@
-﻿using System;
+﻿using ConsoleTableExt;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,6 +31,7 @@ namespace SlothNet
                     n.Dendrites.Add(new Dendrite());
                 }
             }
+            Layers.Add(layer);
         }
 
         public void Build()
@@ -42,28 +45,100 @@ namespace SlothNet
                 }
 
                 NeuralLayer next = Layers[i + 1];
-
+                ConnectLayers(layer, next);
+                i++;
             }
         }
 
         public void ConnectLayers(NeuralLayer from, NeuralLayer to)
         {
+            foreach(Neuron n in from.Neurons)
+            {
+                n.Dendrites = new List<Dendrite>();
+                n.Dendrites.Add(new Dendrite());
+            }
+
             foreach(Neuron neuron in to.Neurons)
             {
+                neuron.Dendrites = new List<Dendrite>();
                 foreach(Neuron n in from.Neurons)
                 {
                     neuron.Dendrites.Add(new Dendrite()
                     {
-                        Input = neuron.Output,
+                        Input = n.Output,
                         Weight = to.Weight
                     });
                 }
             }
         }
 
-        public void Train()
+        public void Train(NeuralData Input, NeuralData Output, int iterations = 100, double lr = 0.1)
         {
-            // Perceptron Learning Algorithm
+            int epoch = 1;
+            while(epoch <= iterations)
+            {
+                NeuralLayer inputLayer = Layers[0];
+                List<double> outputs = new List<double>();
+
+                for(int x = 0; x < Input.Data.Length; x++)
+                {
+                    for(int j = 0; j < Input.Data[x].Length; j++)
+                    {
+                        inputLayer.Neurons[j].Output.Value = Input.Data[x][j];
+                    }
+
+                    ComputeOutput();
+                    outputs.Add(Layers.First().Neurons.First().Output.Value);
+                }
+
+                double accuracy = 0;
+                int count = 0;
+                outputs.ForEach((x) =>
+                {
+                    if(x == Output.Data[count].First())
+                    {
+                        accuracy++;
+                    }
+                    count++;
+                });
+
+                OptimiseWeights(accuracy/count);
+                Console.WriteLine("Epoch: {0}, Accuracy {1}%", epoch, accuracy);
+                epoch++;
+            }
+        }
+
+        public void ComputeOutput()
+        {
+            Layers[0].Forward();
+        }
+
+        public void OptimiseWeights(double accuracy)
+        {
+            float lr = 0.1f;
+            if (accuracy == 1)
+                return;
+
+            if (accuracy > 1)
+                lr = -lr;
+
+            Layers[0].Optimise(lr, 1);
+        }
+
+        public void DisplayNetwork()
+        {
+            DataTable table = new DataTable();
+            table.Columns.Add("Neuron");
+            table.Columns.Add("Weight");
+            foreach(Neuron neuron in Layers.First().Neurons)
+            {
+                DataRow row = table.NewRow();
+                row[0] = neuron;
+                row[1] = Layers.First().Weight;
+                table.Rows.Add(row);
+            }
+            ConsoleTableBuilder CTB = ConsoleTableBuilder.From(table);
+            CTB.ExportAndWrite();
         }
     }
 }

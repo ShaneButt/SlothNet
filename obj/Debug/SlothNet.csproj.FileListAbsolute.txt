@@ -5,3 +5,5 @@ C:\Users\Shane\source\repos\SlothNet\SlothNet\obj\Debug\SlothNet.csprojAssemblyR
 C:\Users\Shane\source\repos\SlothNet\SlothNet\obj\Debug\SlothNet.csproj.CoreCompileInputs.cache
 C:\Users\Shane\source\repos\SlothNet\SlothNet\obj\Debug\SlothNet.exe
 C:\Users\Shane\source\repos\SlothNet\SlothNet\obj\Debug\SlothNet.pdb
+C:\Users\Shane\source\repos\SlothNet\SlothNet\bin\Debug\ConsoleTableExt.dll
+C:\Users\Shane\source\repos\SlothNet\SlothNet\obj\Debug\SlothNet.csproj.CopyComplete

@@ -11,5 +11,10 @@ namespace SlothNet
         public Pulse Input { get; set; }
         public double Weight { get; set; } = 0;
         public bool Learnable { get; set; } = true;
+
+        public Dendrite()
+        {
+            Input = new Pulse();
+        }
     }
 }

@@ -10,7 +10,6 @@ namespace SlothNet
     {
         public List<Dendrite> Dendrites { get; set; }
         public Pulse Output { get; set; }
-        private double Weight;
 
         public Neuron()
         {
@@ -22,15 +21,6 @@ namespace SlothNet
         {
             Output.Value = Sum();
             Output.Value = Activation(Output.Value);
-        }
-
-        public void Compute(double lr, double delta) // lr = learning rate
-        {
-            Weight += lr * delta;
-            foreach(Dendrite d in Dendrites)
-            {
-                d.Weight = Weight;
-            }
         }
 
         public void UpdateWeight(double newWeight)
@@ -55,6 +45,11 @@ namespace SlothNet
         {
             double thresh = 1;
             return input >= thresh ? 0 : thresh;
+        }
+
+        public override string ToString()
+        {
+            return base.ToString();
         }
     }
 }

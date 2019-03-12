@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Text;
+using ConsoleTableExt;
 
 namespace SlothNet
 {
@@ -17,43 +18,68 @@ namespace SlothNet
              * StreamReader .NextLine() and Split(',') to read into a DataTable object
              */
             string CSVFile = Environment.CurrentDirectory + @"/dataset.csv";
-            DataTable Table = ReadCSV(CSVFile);
+            DataTable[] Tables = CSVReader(CSVFile);
+            DataTable Inputs = Tables[0];
+            DataTable Outputs = Tables[1];
+
+
+            NeuralNetwork Network = new NeuralNetwork();
+            Network.AddLayer(new NeuralLayer(57, 0.1, "INPUT"));
+            Network.AddLayer(new NeuralLayer(1, 0.1, "OUTPUT"));
+            Network.Build();
+            Console.WriteLine("------------BEFORE TRAINING------------");
+            Network.DisplayNetwork();
+
+            NeuralData InputData = new NeuralData(Inputs.Rows.Count);
+            InputData.Add(Inputs);
+            NeuralData OutputData = new NeuralData(Outputs.Rows.Count);
+            OutputData.Add(Outputs);
+
+            Network.Train(InputData, OutputData);
+            Console.WriteLine();
+            Console.WriteLine("------------AFTER TRAINING------------");
+            Network.DisplayNetwork();
             Console.ReadLine();
         }
-
-        private static DataTable ReadCSV(string CSVFilePath)
+        
+        private static DataTable[] CSVReader(string CSV)
         {
-            string[] Rows = File.ReadAllLines(CSVFilePath);
+            string[] Rows = File.ReadAllLines(CSV);
             string[] Cells = Rows[0].Split(',');
-            DataTable Table = new DataTable();
-            int Columns = Cells.Length;
-            for (int i = 0; i < Columns; i++)
-                Table.Columns.Add($"Column {i}", typeof(string));
-            DataRow Row;
-            for (int i = 0; i < Rows.Length; i++) // Run through every row
+
+            DataTable Inputs = new DataTable();
+            DataTable Outputs = new DataTable();
+
+            int InputColumns = Cells.Length - 1;
+            for (int i = 0; i < InputColumns; i++)
+            {
+                Inputs.Columns.Add($"Column {i}", typeof(double));
+            }
+            Outputs.Columns.Add("Output", typeof(double));
+
+            // Fill Tables
+            DataRow I_Row;
+            DataRow O_Row;
+            for(int i = 0; i < Rows.Length; i++)
             {
                 Cells = Rows[i].Split(',');
-                Row = Table.NewRow();
-                for (int x = 0; x < Columns; x++) // Run through every column
+                I_Row = Inputs.NewRow();
+                O_Row = Outputs.NewRow();
+                for(int x = 0; x < InputColumns; x++)
                 {
-                    //Console.WriteLine("Cell: " + Cells[x]);
-                    Row[x] = Cells[x].ToString();
+                    I_Row[x] = Cells[x].ToString();
                 }
-                Table.Rows.Add(Row);
+                Inputs.Rows.Add(I_Row);
+                O_Row[0] = Cells[InputColumns].ToString();
+                Outputs.Rows.Add(O_Row);
             }
-            return Table;
+
+            return new DataTable[] { Inputs, Outputs };
         }
 
         private static void DisplayTable(DataTable tab)
         {
-            foreach(DataRow row in tab.Rows)
-            {
-                Console.WriteLine();
-                for(int i = 0; i < tab.Columns.Count; i++)
-                {
-                    Console.Write(row[i] + " | ");
-                }
-            }
+            ConsoleTableBuilder.From(tab).ExportAndWrite();
         }
     }
 }
