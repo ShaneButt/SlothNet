@@ -24,7 +24,8 @@ namespace SlothNet
 
 
             NeuralNetwork Network = new NeuralNetwork();
-            Network.AddLayer(new NeuralLayer(57, 0.1, "INPUT"));
+            Network.AddLayer(new NeuralLayer(57, new Random().NextDouble(), "INPUT"));
+            Network.AddLayer(new NeuralLayer(5, new Random().NextDouble(), "HIDDEN"));
             Network.AddLayer(new NeuralLayer(1, 0.1, "OUTPUT"));
             Network.Build();
             Console.WriteLine("------------BEFORE TRAINING------------");
@@ -35,7 +36,7 @@ namespace SlothNet
             NeuralData OutputData = new NeuralData(Outputs.Rows.Count);
             OutputData.Add(Outputs);
 
-            Network.Train(InputData, OutputData);
+            Network.Train(InputData, OutputData, 100);
             Console.WriteLine();
             Console.WriteLine("------------AFTER TRAINING------------");
             Network.DisplayNetwork();

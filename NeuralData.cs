@@ -10,22 +10,27 @@ namespace SlothNet
     class NeuralData
     {
         public double[][] Data;
-        private int Rows;
         private int Row = 0;
 
         public NeuralData(int rows)
         {
-            Rows = rows;
             Data = new double[rows][];
         }
 
         public void Add(DataTable dataTable)
         {
-            double[] data = new double[Rows];
-            foreach(DataRow row in dataTable.Rows)
+            List<double> data = new List<double>();
+            for(int i = 0; i < dataTable.Rows.Count; i++)
             {
-
+                DataRow dr = dataTable.Rows[i];
+                foreach (double item in dr.ItemArray)
+                {
+                    data.Add(item);
+                }
+                Data[i] = data.ToArray();
+                data.Clear();
             }
+            
         }
     }
 }

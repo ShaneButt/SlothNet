@@ -86,9 +86,8 @@ namespace SlothNet
                     {
                         inputLayer.Neurons[j].Output.Value = Input.Data[x][j];
                     }
-
                     ComputeOutput();
-                    outputs.Add(Layers.First().Neurons.First().Output.Value);
+                    outputs.Add(Layers.Last().Neurons.First().Output.Value);
                 }
 
                 double accuracy = 0;
@@ -103,38 +102,63 @@ namespace SlothNet
                 });
 
                 OptimiseWeights(accuracy/count);
-                Console.WriteLine("Epoch: {0}, Accuracy {1}%", epoch, accuracy);
+                Console.WriteLine("Epoch: {0}, Accuracy {1}%", epoch, accuracy/count);
                 epoch++;
             }
         }
 
         public void ComputeOutput()
         {
-            Layers[0].Forward();
+            bool first = true;
+            foreach(NeuralLayer layer in Layers)
+            {
+                if (first)
+                    continue; first = false;
+                layer.Forward();
+            }
         }
 
         public void OptimiseWeights(double accuracy)
         {
             float lr = 0.1f;
-            if (accuracy == 1)
+            if (accuracy >= 0.95 && accuracy <= 1)
                 return;
 
             if (accuracy > 1)
                 lr = -lr;
 
-            Layers[0].Optimise(lr, 1);
+            foreach(NeuralLayer Layer in Layers)
+            {
+                Layer.Optimise(lr, 1);
+            }
         }
 
         public void DisplayNetwork()
         {
             DataTable table = new DataTable();
-            table.Columns.Add("Neuron");
+            table.Columns.Add("Input");
             table.Columns.Add("Weight");
-            foreach(Neuron neuron in Layers.First().Neurons)
+            table.Columns.Add("Hidden");
+            table.Columns.Add("Weight");
+            table.Columns.Add("Output");
+            foreach (Neuron neuron in Layers[0].Neurons)
             {
                 DataRow row = table.NewRow();
                 row[0] = neuron;
                 row[1] = Layers.First().Weight;
+                table.Rows.Add(row);
+            }
+            foreach (Neuron neuron in Layers[1].Neurons)
+            {
+                DataRow row = table.NewRow();
+                row[0] = neuron;
+                row[1] = Layers.First().Weight;
+                table.Rows.Add(row);
+            }
+            foreach (Neuron neuron in Layers[2].Neurons)
+            {
+                DataRow row = table.NewRow();
+                row[4] = neuron.Output;
                 table.Rows.Add(row);
             }
             ConsoleTableBuilder CTB = ConsoleTableBuilder.From(table);
