@@ -23,12 +23,11 @@ namespace SlothNet
             Name = name;
         }
 
-        public void Compute(double lr, double delta) // lr = learning rate
+        public void Compute(double error) // lr = learning rate
         {
-            Weight += lr * delta;
             foreach (Neuron n in Neurons)
             {
-                n.UpdateWeight(Weight);
+                n.AdjustWeight(error);
             }
         }
 
@@ -40,12 +39,11 @@ namespace SlothNet
             }
         }
 
-        public void Optimise(double lr, double delta)
+        public void Optimise(double lr, double error, double delta)
         {
-            Weight += lr * delta;
             foreach(Neuron n in Neurons)
             {
-                n.UpdateWeight(Weight);
+                n.AdjustWeight(error);
             }
         }
 

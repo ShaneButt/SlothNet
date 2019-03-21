@@ -22,24 +22,23 @@ namespace SlothNet
             DataTable Inputs = Tables[0];
             DataTable Outputs = Tables[1];
 
-
-            NeuralNetwork Network = new NeuralNetwork();
-            Network.AddLayer(new NeuralLayer(57, new Random().NextDouble(), "INPUT"));
-            Network.AddLayer(new NeuralLayer(5, new Random().NextDouble(), "HIDDEN"));
-            Network.AddLayer(new NeuralLayer(1, 0.1, "OUTPUT"));
-            Network.Build();
-            Console.WriteLine("------------BEFORE TRAINING------------");
-            Network.DisplayNetwork();
-
             NeuralData InputData = new NeuralData(Inputs.Rows.Count);
             InputData.Add(Inputs);
             NeuralData OutputData = new NeuralData(Outputs.Rows.Count);
             OutputData.Add(Outputs);
 
-            Network.Train(InputData, OutputData, 100);
+            NeuralNetwork Network = new NeuralNetwork();
+            Network.AddLayer(new NeuralLayer(57, new Random().NextDouble(), "INPUT"));
+            Network.AddLayer(new NeuralLayer(1, 0.1, "OUTPUT"));
+            Network.Build();
+            Console.WriteLine("------------BEFORE TRAINING------------");
+            Network.DisplayNetwork();
+
+            Network.Train(InputData, OutputData, 5000, 0.5);
             Console.WriteLine();
             Console.WriteLine("------------AFTER TRAINING------------");
             Network.DisplayNetwork();
+
             Console.ReadLine();
         }
         

@@ -36,7 +36,7 @@ namespace SlothNet
 
         public void Build()
         {
-            int i = 0;
+            /*int i = 0;
             foreach(NeuralLayer layer in Layers)
             {
                 if(i>=Layers.Count - 1)
@@ -47,6 +47,16 @@ namespace SlothNet
                 NeuralLayer next = Layers[i + 1];
                 ConnectLayers(layer, next);
                 i++;
+            }*/
+
+            if (Layers.Any())
+            {
+                for(int x = 0; x < Layers.Count-1; x++)
+                {
+                    NeuralLayer from = Layers[x];
+                    NeuralLayer to = Layers[x + 1];
+                    ConnectLayers(from, to);
+                }
             }
         }
 
@@ -94,6 +104,7 @@ namespace SlothNet
                 int count = 0;
                 outputs.ForEach((x) =>
                 {
+                    Console.WriteLine("ANSWER: {0}, GUESSED: {1}", Output.Data[count].First(), x);
                     if(x == Output.Data[count].First())
                     {
                         accuracy++;
@@ -101,8 +112,8 @@ namespace SlothNet
                     count++;
                 });
 
-                OptimiseWeights(accuracy/count);
-                Console.WriteLine("Epoch: {0}, Accuracy {1}%", epoch, accuracy/count);
+                OptimiseWeights(accuracy/count, count-accuracy);
+                Console.WriteLine("Epoch: {0}, Accuracy {1:0.000}%", epoch, accuracy/count*100);
                 epoch++;
             }
         }
@@ -113,12 +124,15 @@ namespace SlothNet
             foreach(NeuralLayer layer in Layers)
             {
                 if (first)
-                    continue; first = false;
+                {
+                    first = false;
+                    continue;
+                }
                 layer.Forward();
             }
         }
 
-        public void OptimiseWeights(double accuracy)
+        public void OptimiseWeights(double accuracy, double error)
         {
             float lr = 0.1f;
             if (accuracy >= 0.95 && accuracy <= 1)
@@ -129,7 +143,7 @@ namespace SlothNet
 
             foreach(NeuralLayer Layer in Layers)
             {
-                Layer.Optimise(lr, 1);
+                Layer.Optimise(lr, error, 1 / (1 + Math.Exp(-Layer.Weight)));
             }
         }
 
@@ -137,9 +151,7 @@ namespace SlothNet
         {
             DataTable table = new DataTable();
             table.Columns.Add("Input");
-            table.Columns.Add("Weight");
-            table.Columns.Add("Hidden");
-            table.Columns.Add("Weight");
+            table.Columns.Add("InputWeight");
             table.Columns.Add("Output");
             foreach (Neuron neuron in Layers[0].Neurons)
             {
@@ -151,14 +163,7 @@ namespace SlothNet
             foreach (Neuron neuron in Layers[1].Neurons)
             {
                 DataRow row = table.NewRow();
-                row[0] = neuron;
-                row[1] = Layers.First().Weight;
-                table.Rows.Add(row);
-            }
-            foreach (Neuron neuron in Layers[2].Neurons)
-            {
-                DataRow row = table.NewRow();
-                row[4] = neuron.Output;
+                row[2] = neuron.Output.Value;
                 table.Rows.Add(row);
             }
             ConsoleTableBuilder CTB = ConsoleTableBuilder.From(table);

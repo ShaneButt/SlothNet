@@ -10,6 +10,7 @@ namespace SlothNet
     {
         public List<Dendrite> Dendrites { get; set; }
         public Pulse Output { get; set; }
+        public double Error;
 
         public Neuron()
         {
@@ -19,8 +20,11 @@ namespace SlothNet
 
         public void Fire()
         {
+            //Console.WriteLine("PRE-SUM: " + Output.Value);
             Output.Value = Sum();
+            //Console.WriteLine("POST-SUM: " + Output.Value);
             Output.Value = Activation(Output.Value);
+            //Console.WriteLine("POST-ACT: " + Output.Value);
         }
 
         public void UpdateWeight(double newWeight)
@@ -28,6 +32,15 @@ namespace SlothNet
             foreach(Dendrite d in Dendrites)
             {
                 d.Weight = newWeight;
+            }
+        }
+
+        public void AdjustWeight(double err)
+        {
+            Error = err;
+            foreach(Dendrite d in Dendrites)
+            {
+                d.Weight += Error * Activation(d.Weight) * 0.2 * Output.Value;
             }
         }
 
@@ -43,8 +56,8 @@ namespace SlothNet
 
         private double Activation(double input)
         {
-            double thresh = 1;
-            return input >= thresh ? 0 : thresh;
+            double val = 1 / (1 + Math.Exp(-input));
+            return (val * (1 - val) >= 0.00000000001) ? 1 : 0;
         }
 
         public override string ToString()

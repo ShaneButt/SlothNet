@@ -10,7 +10,7 @@ namespace SlothNet
     class NeuralData
     {
         public double[][] Data;
-        private int Row = 0;
+        public int Row = 0;
 
         public NeuralData(int rows)
         {
